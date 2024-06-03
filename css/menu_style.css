@@ -1,0 +1,47 @@
+/*ESTILO PARA EL MENU DE USUARIOS*/
+.position{
+    position: absolute;
+    margin-top: -30px;
+}
+
+.bordes{
+    border: 5px solid black;
+}
+
+#title{
+    font-size: 35px;
+    padding-bottom: 20px;
+}
+
+#cerrar-sesion {
+    font-size: 15px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#cerrar-sesion:hover{
+   text-decoration: none;
+}
+
+.pro-pic{
+    border: 20px solid black;
+    border-radius: 100px;
+}
+
+.btn1{
+    border-color: #000;
+    background-color: #fff;
+    border-radius: 10px;
+    
+}
+
+#btn-close{
+    background-color: rgb(16, 92, 255);
+    color: #000;
+}
+
+#btn-close:hover{
+    background-color: rgb(221, 45, 45);
+    color: white;
+}

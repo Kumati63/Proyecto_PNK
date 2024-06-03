@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <title>sign up</title>
+    <link rel="stylesheet" href="css/styles_signup.css">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="js/sweetalert.min.js"></script>
+    <script src="js/validaciones.js"></script>
+    <script>
+        function validar_signup(){
+                if(document.form.rut.value=="")
+                {
+                    swal("Debe ingresar el rut");
+                    document.form.rut.focus();
+                    return false;
+                }
+                else{
+                    if(!Fn.validaRut(document.form.rut.value)){
+                        swal("Rut invalido, asegurece de que\n contenga como minimo el guión");
+                        document.form.rut.focus();
+                        return false;
+                    }
+                }
+        
+                if(document.form.email.value=="")
+                {
+                    swal("Debe ingresar un email");
+                    document.form.email.focus();
+                    return false;
+                }else{
+                    if(!validateEmail())
+                    {
+                        swal("Email invalido");
+                        document.form.email.focus();
+                        return false;
+                    }
+                }
+
+                if(document.form.telefono.value==""){
+                    swal("Debe ingresar un telefono");
+                    document.form.telefono.focus();
+                    return false;
+                }
+            
+                if (document.form.nombre.value==""){
+                    swal("Debe ingresar un nombre");
+                    document.form.nombre.focus();
+                    return false;
+                }
+
+                
+                if(document.form.contrasena.value=="")
+                {
+                    swal("Debe ingresar una contrasena");
+                    document.form.contrasena.focus();
+                    return false;
+                }
+
+                if(document.form.propiedad.value==""){
+                    swal("Debe ingresar una propiedad");
+                    document.form.propiedad.focus();
+                    return false;
+                }
+
+                if(document.form.nacimiento.value==""){
+                    swal("Debe ingresar su fecha de nacimiento");
+                    document.form.nacimiento.focus();
+                    return false;
+                }
+                
+
+                if(document.form.sexo.value=="Seleccionar")
+                {
+                    swal("Debe ingresar su sexo");
+                    document.form.sexo.focus();
+                    return false;
+                }
+
+                document.form.submit();
+         }
+        function validateEmail(){
+            var emailField = document.form.email;
+            var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+            if(validEmail.test(emailField.value)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        var Fn = {
+            validaRut: function(rutCompleto) {
+                // Remover puntos del RUT
+                rutCompleto = rutCompleto.replace(/\./g, '');
+                
+                if (!/^[0-9]+-[0-9kK]{1}$/.test(rutCompleto))
+                    return false;
+                var tmp = rutCompleto.split('-');
+                var digv = tmp[1];
+                var rut = tmp[0];
+                if (digv == 'K') digv = 'k';
+                return (Fn.dv(rut) == digv);
+            },
+            dv: function(T) {
+                var M = 0,
+                    S = 1;
+                for (; T; T = Math.floor(T / 10))
+                    S = (S + T % 10 * (9 - M++ % 6)) % 11;
+                return S ? S - 1 : 'k';
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <form method="post" name="form" action="functions/signup-process.php">
+
+            <div class="logo_image">
+                <a href="index.html"><img src="img/icon.png" alt="icon" class="image" ></a>
+            </div>
+    
+            <h1 id="title">REGISTRARSE</h1>
+            
+            <div class="container_signup">   
+                
+                <div class="upper_text">
+                    <p>Esta ingresando como Propietario, Para ingresar como Gestor inmobiliario<a href="signup_ges.html"> ingrese aqui</a></p>
+                </div>
+
+                <div class="input-box-group">
+
+                    <div class="input-box">
+                        <label for="rut">Rut</label><br>
+                        <input type="text" placeholder="Ingresar Rut" id="rut" name="rut" required><br>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="email">Email</label><br>
+                        <input type="email" placeholder="Ingresar Email" name="email" required><br>
+                    </div>
+
+                </div>
+                
+                <div class="input-box-group">
+
+                    <div class="input-box">
+                        <label for="telefono" >Telefono</label><br>
+                        <input type="number" placeholder="Ingresar Telefono" name="telefono" required><br>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="nombre" >Nombre</label><br>
+                        <input type="text" placeholder="Ingresar nombre" name="nombre" required><br>
+                    </div>
+
+                </div>
+
+                <div class="input-box-group">
+
+                    <div class="input-box">
+                        <label for="contrasena">contrasena</label><br>
+                        <input type="password" placeholder="Ingresar contrasena" name="contrasena" required><br>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="propiedad" >N° de la propiedad</label><br>
+                        <input type="number" placeholder="N° de la propiedad" name="propiedad" required><br>
+                    </div>
+                    
+                </div>
+
+                <div class="input-box-group_2">
+                    <div class="input-box">
+                            <label for="nacimiento" style="float: left;">Fecha Nacimiento</label><br>
+                            <input class="nacimiento" type="date" name="nacimiento" required>
+                    </div>
+
+                    <div class="container_sex">
+                        <label for="sexo" style="padding-left: 15px;"">Sexo</label><br>
+                        <select name="sexo" required>
+                            <option value="Seleccionar">Seleccionar</option>
+                            <option value="Hombre">Hombre</option>
+                            <option value="Mujer">Mujer</option>
+                        </select><br><br>
+                    </div>
+
+                </div>
+                
+                <button class="button" type="button" onclick="validar_signup()">Enviar</button>
+                
+                <div class="bottom">
+                    <label>
+                        <div><input type="checkbox" id="terms" name="terms" checked required> Acepto los <a href="">Terminos y Servicios</a></div>
+                        <div>tienes una cuenta? <a href="login.html">Login</a></div>
+                    </label>
+                </div>
+                
+            </div>
+        </form>    
+    </div>
+</body>
+</html>
