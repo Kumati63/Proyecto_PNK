@@ -37,6 +37,8 @@ if(isset($_SESSION['usu']))
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/sweetalert.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js""></script>
+    <script src="js/validar_adm.js""></script>
     <title>Adm.Usuarios</title>
     <style>
         #buscador{
@@ -57,156 +59,21 @@ if(isset($_SESSION['usu']))
         }
     </style>
     <script>
-        function validar(btn){
-            if(btn!="Cancelar"){
-
-                if(document.form.rut.value=="")
-                {
-                    swal("Debe ingresar el rut");
-                    document.form.rut.focus();
-                    return false;
-                }
-                else{
-                    if(!Fn.validaRut(document.form.rut.value)){
-                        swal("Rut invalido, asegurece de que\n contenga como minimo el guión");
-                        document.form.rut.focus();
-                        return false;
-                    }
-                }
-        
-                if(document.form.email.value=="")
-                {
-                    swal("Debe ingresar un email");
-                    document.form.email.focus();
-                    return false;
-                }else{
-                    if(!validateEmail())
-                    {
-                        swal("Email invalido");
-                        document.form.email.focus();
-                        return false;
-                    }
-                }
-
-                if(document.form.Telefono.value==""){
-                    swal("Debe ingresar un telefono");
-                    document.form.Nombre.focus();
-                    return false;
-                }
-                // else{
-                //     if(validarLongitud()){
-                //         swal(">El telefono debe tener menos de 12 caracteres");
-                //         document.form.Telefono.focus();
-                //         return false;
-                //     }
-                // }
+        $(function() {
             
-                if (document.form.Nombre.value==""){
-                    swal("Debe ingresar un nombre");
-                    document.form.Nombre.focus();
-                    return false;
-                }
+        });
 
-                if(btn=="Enviar")
-                {
-                    if(document.form.contrasena.value=="")
-                    {
-                        swal("Debe ingresar la contrasena");
-                        document.form.contrasena.focus();
-                        return false;
-                    }
+        // $(function() {
+        //     $("#adm-users").hide();
+        //     $('#new-user').on( "click", function() {
+        //         $("#adm-users").show();
+        //     } );
+        //     $('#btn-edit-user').on( "click", function() {
+        //         $("#adm-users").show();
+        //     } );
+        // });
 
-                    if(document.form.Repetir_contrasena.value=="")
-                    {
-                        swal("Debe ingresar la Repeticion de la contrasena");
-                        document.form.Repetir_contrasena.focus();
-                        return false;
-                    }
-
-                    if(document.form.contrasena.value!=document.form.Repetir_contrasena.value)
-                    {
-                        swal("Las contrasena deben ser iguales");
-                        document.form.contrasena.value="";
-                        document.form.Repetir_contrasena.value="";
-                        document.form.contrasena.focus();
-                        return false;
-                    }
-                }
-
-                if(document.form.nacimiento.value==""){
-                    swal("Debe ingresar su fecha de nacimiento");
-                    document.form.nacimiento.focus();
-                    return false;
-                }
-                
-                if(document.form.tipo_usuario.value==9)
-                {
-                    swal("Debe ingresar el tipo de usuario");
-                    document.form.tipo_usuario.focus();
-                    return false;
-                }
-
-                if(document.form.estado.value==9)
-                {
-                    swal("Debe ingresar el tipo de usuario");
-                    document.form.estado.focus();
-                    return false;
-                }
-
-                if(document.form.sexo.value=="Seleccionar")
-                {
-                    swal("Debe ingresar el tipo de usuario");
-                    document.form.sexo.focus();
-                    return false;
-                }
-
-                document.form.accion_btn.value=btn;
-                document.form.submit();
-            }else{
-                document.form.accion_btn.value=btn;
-                document.form.submit();
-            }
-        }
-        function validateEmail(){
-            var emailField = document.getElementById('email');
-            var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
-            if(validEmail.test(emailField.value)){
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        var Fn = {
-            validaRut: function(rutCompleto) {
-                // Remover puntos del RUT
-                rutCompleto = rutCompleto.replace(/\./g, '');
-                
-                if (!/^[0-9]+-[0-9kK]{1}$/.test(rutCompleto))
-                    return false;
-                var tmp = rutCompleto.split('-');
-                var digv = tmp[1];
-                var rut = tmp[0];
-                if (digv == 'K') digv = 'k';
-                return (Fn.dv(rut) == digv);
-            },
-            dv: function(T) {
-                var M = 0,
-                    S = 1;
-                for (; T; T = Math.floor(T / 10))
-                    S = (S + T % 10 * (9 - M++ % 6)) % 11;
-                return S ? S - 1 : 'k';
-            }
-        }
-        function validarLongitud() {
-            var input = document.getElementById("telefono");
-            var longitud = input.value.length;
-
-            if (longitud > 12) {
-                alert("El número de caracteres no puede superar los 12");
-                return true;
-            }
-        }
+        
 
     </script>
 </head>
@@ -244,120 +111,122 @@ if(isset($_SESSION['usu']))
 
     <!-- body -->
     <!-- CREACION Y MODIFICACION DE USUARIOS -->
-    <div id="contenedor-usuarios">
-        <div class="card">
-            <div class="card-header alineartexto">Administración de Usuarios</div>
-            <div class="card-body">
-                <form action="functions/crud_usuarios.php" method="post" name="form" class="form-container">
-                        <div class="row">
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-rut">Rut</label><br>
-                                <input class="form-control" id="rut "name="rut" type="text" placeholder="Rut"
-                                value="<?php if (isset($_GET['id'])){ echo $datos_usuario['rut'];} ?>">
-                            </div>
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-tipo_Usuario">Tipo Usuario</label><br>
-                                <select name="tipo_usuario" id="tipo_usuario" class="form-control">
-                                    <option class="form-control" value="9">Seleccionar</option>
-                                    <?php
-                                        $sql="SELECT * FROM tipo_usuario WHERE estado=1";
-                                        $result=mysqli_query(conectar(),$sql);
-                                        while($datos=mysqli_fetch_array($result)){
-                                        ?>
-                                            <option 
-                                            class="form-control" value="
-                                            <?php echo $datos['id_tipo'];?>"<?php if (isset($_GET['id'])){if($datos_usuario['id_tipo']==$datos['id_tipo']){?>selected<?php }}?>>
-                                            <?php echo $datos['tipo'];?></option>
+    <div id="adm-users">
+        <div id="contenedor-usuarios">
+            <div class="card">
+                <div class="card-header alineartexto">Administración de Usuarios</div>
+                <div class="card-body">
+                    <form action="functions/crud_usuarios.php" method="post" name="form" class="form-container">
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-rut">Rut</label><br>
+                                    <input class="form-control" id="rut "name="rut" type="text" placeholder="Rut"
+                                    value="<?php if (isset($_GET['id'])){ echo $datos_usuario['rut'];} ?>">
+                                </div>
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-tipo_Usuario">Tipo Usuario</label><br>
+                                    <select name="tipo_usuario" id="tipo_usuario" class="form-control">
+                                        <option class="form-control" value="9">Seleccionar</option>
                                         <?php
-                                        }
-                                    ?>
-                                </select>
+                                            $sql="SELECT * FROM tipo_usuario WHERE estado=1";
+                                            $result=mysqli_query(conectar(),$sql);
+                                            while($datos=mysqli_fetch_array($result)){
+                                            ?>
+                                                <option 
+                                                class="form-control" value="
+                                                <?php echo $datos['id_tipo'];?>"<?php if (isset($_GET['id'])){if($datos_usuario['id_tipo']==$datos['id_tipo']){?>selected<?php }}?>>
+                                                <?php echo $datos['tipo'];?></option>
+                                            <?php
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-nombre">Nombre</label><br>
-                                <input class="form-control" name="Nombre" type="text" placeholder="Nombre Completo"
-                                value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nombre'];} ?>">
-                            </div>
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-email">Email</label><br>
-                                <input class="form-control" id="email" name="email" type="email" placeholder="Email"
-                                value="<?php if (isset($_GET['id'])){ echo $datos_usuario['email'];} ?>">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-estado">Estado</label><br>
-                                <select name="estado" id="estado" class="form-control">
-                                    <option class="form-control" value="9">Seleccionar</option>
-                                    <option class="form-control" value="1" <?php if (isset($_GET['id'])){if($datos_usuario['estado']==1){?>selected<?php }}?>>Activo</option>
-                                    <option class="form-control" value="0" <?php if (isset($_GET['id'])){if($datos_usuario['estado']==0){?>selected<?php }}?>>Inactivo</option>
-                                </select>
-                            </div>
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-telefono">Telefono</label><br>
-                                <input class="form-control" type="text" id="telefono" name="Telefono" placeholder="Telefono"
-                                value="<?php if (isset($_GET['id'])){ echo $datos_usuario['telefono'];} ?>">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-sexo">Sexo</label><br>
-                                <select name="sexo" id="sexo" class="form-control">
-                                    <option class="form-control" value="Seleccionar">Seleccionar</option>
-                                    <option class="form-control" value="Hombre" <?php if (isset($_GET['id'])){if($datos_usuario['sexo']=='Hombre'){?>selected<?php }}?>>Hombre</option>
-                                    <option class="form-control" value="Mujer" <?php if (isset($_GET['id'])){if($datos_usuario['sexo']=='Mujer'){?>selected<?php }}?>>Mujer</option>
-                                </select>
-                            </div>
-                            <div class="col col-sm-6">
-                                <label class="input-icon" for="lbl-nacimiento">Fecha Nacimiento</label><br>
-                                <input class="form-control nacimiento" type="date" id="nacimiento" name="nacimiento"
-                                value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nacimiento'];} ?>">
-                            </div>
-                        </div>
-                        <?php if (!isset($_GET['id']))
-                        {
-                        ?>
                             <br>
                             <div class="row">
                                 <div class="col col-sm-6">
-                                    <label class="input-icon" for="lbl-contrasena">contrasena</label><br>
-                                    <input class="form-control" type="password" id="contrasena" name="contrasena" placeholder="contrasena">
+                                    <label class="input-icon" for="lbl-nombre">Nombre</label><br>
+                                    <input class="form-control" name="Nombre" type="text" placeholder="Nombre Completo"
+                                    value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nombre'];} ?>">
                                 </div>
                                 <div class="col col-sm-6">
-                                    <label class="input-icon" for="lbl-Repetir_contrasena">Repetir contrasena</label><br>
-                                    <input class="form-control" type="password" id="Repetir_contrasena" name="Repetir_contrasena" placeholder="Repetir contrasena">
+                                    <label class="input-icon" for="lbl-email">Email</label><br>
+                                    <input class="form-control" id="email" name="email" type="email" placeholder="Email"
+                                    value="<?php if (isset($_GET['id'])){ echo $datos_usuario['email'];} ?>">
                                 </div>
                             </div>
-                        <?php
-                        }
-                        ?>
-                        <hr>
-                        <div class="row">
-                            <div class="col col-sm-6">
-                                <?php if (!isset($_GET['id']))
-                                {
-                                ?>
-                                    <button type="button" name="btn_enviar" value="Enviar" onclick="validar(this.value);" class="btn btn-sm btn-primary BOTONES form-control" style="padding: 8px 10px 10px 7px;">ENVIAR</button>
-                                <?php
-                                } else{
-                                ?>
-                                    <button type="button" name="btn_modificar" value="Modificar" onclick="validar(this.value);" class="btn btn-sm btn-primary BOTONES form-control" style="padding: 8px 10px 10px 7px;">MODIFICAR</button>
-                                <?php
-                                }
-                                ?>
+                            <br>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-estado">Estado</label><br>
+                                    <select name="estado" id="estado" class="form-control">
+                                        <option class="form-control" value="9">Seleccionar</option>
+                                        <option class="form-control" value="1" <?php if (isset($_GET['id'])){if($datos_usuario['estado']==1){?>selected<?php }}?>>Activo</option>
+                                        <option class="form-control" value="0" <?php if (isset($_GET['id'])){if($datos_usuario['estado']==0){?>selected<?php }}?>>Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-telefono">Telefono</label><br>
+                                    <input class="form-control" type="text" id="telefono" name="Telefono" placeholder="Telefono"
+                                    value="<?php if (isset($_GET['id'])){ echo $datos_usuario['telefono'];} ?>">
+                                </div>
                             </div>
-                            <div class="col col-sm-6">
-                                <button type="button" name="btn_cancelar" value="Cancelar" onclick="validar(this.value);" class="btn btn-sm btn-danger BOTONES form-control" style="padding: 8px 10px 10px 7px;">CANCELAR</button>
-                                <input type="hidden"  name="accion_btn" id="accion_btn" value="">
-                                <input type="hidden"  name="get_id" id="get_id" value="<?php if (isset($_GET['id'])){ echo $_GET['id'];}?>">
+                            <br>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-sexo">Sexo</label><br>
+                                    <select name="sexo" id="sexo" class="form-control">
+                                        <option class="form-control" value="Seleccionar">Seleccionar</option>
+                                        <option class="form-control" value="Hombre" <?php if (isset($_GET['id'])){if($datos_usuario['sexo']=='Hombre'){?>selected<?php }}?>>Hombre</option>
+                                        <option class="form-control" value="Mujer" <?php if (isset($_GET['id'])){if($datos_usuario['sexo']=='Mujer'){?>selected<?php }}?>>Mujer</option>
+                                    </select>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-nacimiento">Fecha Nacimiento</label><br>
+                                    <input class="form-control nacimiento" type="date" id="nacimiento" name="nacimiento"
+                                    value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nacimiento'];} ?>">
+                                </div>
                             </div>
-                        </div>
-                </form>
+                            <?php if (!isset($_GET['id']))
+                            {
+                            ?>
+                                <br>
+                                <div class="row">
+                                    <div class="col col-sm-6">
+                                        <label class="input-icon" for="lbl-contrasena">contrasena</label><br>
+                                        <input class="form-control" type="password" id="contrasena" name="contrasena" placeholder="contrasena">
+                                    </div>
+                                    <div class="col col-sm-6">
+                                        <label class="input-icon" for="lbl-Repetir_contrasena">Repetir contrasena</label><br>
+                                        <input class="form-control" type="password" id="Repetir_contrasena" name="Repetir_contrasena" placeholder="Repetir contrasena">
+                                    </div>
+                                </div>
+                            <?php
+                            }
+                            ?>
+                            <hr>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <?php if (!isset($_GET['id']))
+                                    {
+                                    ?>
+                                        <button type="button" name="btn_enviar" value="Enviar" onclick="validar(this.value);" class="btn btn-sm btn-primary BOTONES form-control" style="padding: 8px 10px 10px 7px;">ENVIAR</button>
+                                    <?php
+                                    } else{
+                                    ?>
+                                        <button type="button" name="btn_modificar" value="Modificar" onclick="validar(this.value);" class="btn btn-sm btn-primary BOTONES form-control" style="padding: 8px 10px 10px 7px;">MODIFICAR</button>
+                                    <?php
+                                    }
+                                    ?>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <button type="button" name="btn_cancelar" value="Cancelar" onclick="validar(this.value);" class="btn btn-sm btn-danger BOTONES form-control" style="padding: 8px 10px 10px 7px;">CANCELAR</button>
+                                    <input type="hidden"  name="accion_btn" id="accion_btn" value="">
+                                    <input type="hidden"  name="get_id" id="get_id" value="<?php if (isset($_GET['id'])){ echo $_GET['id'];}?>">
+                                </div>
+                            </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -371,7 +240,7 @@ if(isset($_SESSION['usu']))
                 <div class="row" style="margin: auto; padding: 12px;">
                     <div class="col col-sm-5 col-xs-12" style="display: flex; align-items: start; padding: 15px;">
                             <h4 style="font-size: 25px; padding-right: 10px; color:#fff;">Lista De <span>Usuarios</span></h4>
-                            <a href="#" class="btn btn-sm btn-primary BOTONES" >Nuevo Usuario</a>
+                            <button id="new-user" class="btn btn-sm btn-primary BOTONES" >Nuevo Usuario</button>
                     </div>
                     <div class="col-sm-7 col-xs-12">
                         <div class="btn_group" style="padding: 10px">

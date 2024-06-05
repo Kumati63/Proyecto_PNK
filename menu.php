@@ -108,7 +108,7 @@ if(isset($_SESSION['usu']))
                     <?php
                         if(($_SESSION['tipo']==1) || ($_SESSION['tipo']==3)){// Si es ADMINISTRADOR Y VENDEDOR mostrara el botón de administrar usuarios
                     ?>
-                    <a href="index.html">
+                    <a href="perfil.php">
                         <button type="button" class="btn1">
                             <img src="img\menu-icons\admven.jpg" alt="" style="width: 90px"><br>
                             Adm. <br>Vendedores
@@ -122,7 +122,7 @@ if(isset($_SESSION['usu']))
                     <?php
                         if(($_SESSION['tipo']==1) || ($_SESSION['tipo']==2)){// Si es ADMINISTRADOR Y PROPIETARIO mostrara el botón de administrar usuarios
                     ?>
-                    <a href="index.html">
+                    <a href="perfil.php">
                         <button type="button" class="btn1">
                             <img src="img\menu-icons\admprop.jpg" alt="" style="width: 90px"><br>
                             Adm. <br>Propietarios

@@ -47,10 +47,12 @@
                 {
                     if (response==0){
                         $("#no").show();
-                        $("#email").focus();
+                        $("#yes").hide();
+                        $('#email').css("border-color","red");
                     }else{
                         $("#no").hide();
                         $("#yes").show();
+                        $('#email').css("border-color","green"); 
                     }
                 }
             });
@@ -70,10 +72,13 @@
             
             <div class="input-box">   
                 <label for="email" >Email</label><br>
-                <input type="email" id="email" placeholder="Ingresar Email" name="email" required>
-                <i class='bx bxs-user'></i>
-                <p id="no" style="color: red; font-size: 13px; margin-left: 20px;">Email no registrado</p>
-                <p id="yes" style="color: green; font-size: 13px; margin-left: 20px;">Email registrado</p>
+                <div class="error">
+                    <input type="email" id="email" placeholder="Ingresar Email" name="email" required>
+                    <i class='bx bxs-user'></i>
+                    <p id="no" style="color: red; font-size: 13px; margin-left: 20px;">Email no registrado</p>
+                    <p id="yes" style="color: green; font-size: 13px; margin-left: 20px;">Email registrado</p>
+                </div>
+                
             </div>
 
             <div class="input-box">

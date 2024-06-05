@@ -10,108 +10,79 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="js/sweetalert.min.js"></script>
     <script src="js/validaciones.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js\validar_singup_prop.js"></script>
     <script>
-        function validar_signup(){
-                if(document.form.rut.value=="")
-                {
-                    swal("Debe ingresar el rut");
-                    document.form.rut.focus();
-                    return false;
-                }
-                else{
-                    if(!Fn.validaRut(document.form.rut.value)){
-                        swal("Rut invalido, asegurece de que\n contenga como minimo el guión");
-                        document.form.rut.focus();
-                        return false;
+        $(function() {
+            $("#no1").hide();
+            $("#yes1").hide();
+            $("#no2").hide();
+            $("#yes2").hide();
+            $('#email').on( "blur", function() {
+                validaremailrepetido();
+            } );
+            $('#rut').on( "blur", function() {
+                validarrutrepetido();
+            } );
+        });
+
+        function validate_empty(){
+            $(document).ready(function(){
+                $('#myForm input[type="text"]').blur(function(){
+                    if(!$(this).val()){
+                        $(this).css("border-color","red"); 
+                    } else{
+                        $(this).css("border-color","green");
                     }
-                }
-        
-                if(document.form.email.value=="")
-                {
-                    swal("Debe ingresar un email");
-                    document.form.email.focus();
-                    return false;
-                }else{
-                    if(!validateEmail())
-                    {
-                        swal("Email invalido");
-                        document.form.email.focus();
-                        return false;
-                    }
-                }
-
-                if(document.form.telefono.value==""){
-                    swal("Debe ingresar un telefono");
-                    document.form.telefono.focus();
-                    return false;
-                }
-            
-                if (document.form.nombre.value==""){
-                    swal("Debe ingresar un nombre");
-                    document.form.nombre.focus();
-                    return false;
-                }
-
-                
-                if(document.form.contrasena.value=="")
-                {
-                    swal("Debe ingresar una contrasena");
-                    document.form.contrasena.focus();
-                    return false;
-                }
-
-                if(document.form.propiedad.value==""){
-                    swal("Debe ingresar una propiedad");
-                    document.form.propiedad.focus();
-                    return false;
-                }
-
-                if(document.form.nacimiento.value==""){
-                    swal("Debe ingresar su fecha de nacimiento");
-                    document.form.nacimiento.focus();
-                    return false;
-                }
-                
-
-                if(document.form.sexo.value=="Seleccionar")
-                {
-                    swal("Debe ingresar su sexo");
-                    document.form.sexo.focus();
-                    return false;
-                }
-
-                document.form.submit();
-         }
-        function validateEmail(){
-            var emailField = document.form.email;
-            var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
-            if(validEmail.test(emailField.value)){
-                return true;
-            }else{
-                return false;
-            }
+                });
+            });
         }
 
-        var Fn = {
-            validaRut: function(rutCompleto) {
-                // Remover puntos del RUT
-                rutCompleto = rutCompleto.replace(/\./g, '');
-                
-                if (!/^[0-9]+-[0-9kK]{1}$/.test(rutCompleto))
-                    return false;
-                var tmp = rutCompleto.split('-');
-                var digv = tmp[1];
-                var rut = tmp[0];
-                if (digv == 'K') digv = 'k';
-                return (Fn.dv(rut) == digv);
-            },
-            dv: function(T) {
-                var M = 0,
-                    S = 1;
-                for (; T; T = Math.floor(T / 10))
-                    S = (S + T % 10 * (9 - M++ % 6)) % 11;
-                return S ? S - 1 : 'k';
-            }
+        function validarrutrepetido()
+        {
+                $.ajax({
+                type: "POST",
+                url: 'functions/validarrepetido.php',
+                data: "rut-usu="+$("#rut").val(),
+                success: function(response)
+                    {
+                        if (response==0){
+                            $("#no1").hide();
+                            $("#yes1").show();
+                            
+                            $('#rut').css("border-color","green");
+                        }else{
+                            $("#no1").show();
+                            $("#yes1").hide();
+                            
+                            $('#rut').css("border-color","red"); 
+                        }
+                    }
+                });
+            
+        }
+
+        function validaremailrepetido()
+        { 
+            $.ajax({
+            type: "POST",
+            url: 'functions/validarrepetido.php',
+            data: "email-usu="+$("#email").val(),
+            success: function(response)
+                {
+                   if (response==0){
+                        $("#no2").hide();
+                        $("#yes2").show();
+                        
+                        $('#email').css("border-color","green");
+                    }else{
+                        $("#no2").show();
+                        $("#yes2").hide();
+                        
+                        $('#email').css("border-color","red"); 
+                    }
+                }
+            });
         }
     </script>
 </head>
@@ -137,11 +108,15 @@
                     <div class="input-box">
                         <label for="rut">Rut</label><br>
                         <input type="text" placeholder="Ingresar Rut" id="rut" name="rut" required><br>
+                        <p id="no1" style="color: red; font-size: 13px; margin-left: 20px; margin-top: -10px;">Rut ya registrado</p>
+                        <p id="yes1" style="color: green; font-size: 13px; margin-left: 20px; margin-top: -10px;">Rut disponible</p>
                     </div>
 
                     <div class="input-box">
                         <label for="email">Email</label><br>
-                        <input type="email" placeholder="Ingresar Email" name="email" required><br>
+                        <input type="email" placeholder="Ingresar Email" id="email" name="email" required><br>
+                        <p id="no2" style="color: red; font-size: 13px; margin-left: 20px; margin-top: -10px;">Email ya registrado</p>
+                        <p id="yes2" style="color: green; font-size: 13px; margin-left: 20px; margin-top: -10px;">Email disponible</p>
                     </div>
 
                 </div>
@@ -191,7 +166,7 @@
 
                 </div>
                 
-                <button class="button" type="button" onclick="validar_signup()">Enviar</button>
+                <button class="button" id="submit-button" type="button" onclick="validar_signup()">Enviar</button>
                 
                 <div class="bottom">
                     <label>

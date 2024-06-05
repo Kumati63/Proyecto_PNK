@@ -17,40 +17,6 @@ $tipo_usuario = 3;
 $sql = "INSERT INTO usuarios (rut, email, telefono, nombre, contrasena, antecedentes, nacimiento, sexo, estado, id_tipo)
 VALUES ('$rut', '$email', '$telefono', '$nombre', '$contrasena', '$antecedentes', '$nacimiento', '$sexo', '$estado','$tipo_usuario')";
 
-//VERIFICAR QUE NO SE REPITAN LOS RUT
-$verificar_rut = "SELECT * FROM usuarios WHERE rut='$rut'";
-$result=mysqli_query(conectar(),$verificar_rut);
-$cont_rut = mysqli_num_rows($result);
-
-if ($cont_rut != 0) {
-    echo '<script type="text/javascript">';
-    echo 'if (confirm("El RUT ingresado ya está en uso.")) {';
-    echo '    window.location.href = "../signup_ges.html";';
-    echo '} else {';
-    echo '    window.location.href = "../signup_ges.html";';  // Recargar la página actual
-    echo '}';
-    echo '</script>';
-    die;
-}
-//TERMINO DE VERIFICACION DE RUT
-
-//VERIFICAR QUE NO SE REPITAN LOS CORREOS ELECTRONICOS
-$verificar_correo = "SELECT * FROM usuarios WHERE email='$email'";
-$result=mysqli_query(conectar(),$verificar_correo);
-$cont = mysqli_num_rows($result);
-
-if ($cont != 0) {
-    echo '<script type="text/javascript">';
-    echo 'if (confirm("El correo ingresado ya está en uso.")) {';
-    echo '    window.location.href = "../signup_ges.html";';
-    echo '} else {';
-    echo '    window.location.href = "../signup_ges.html";';  // Recargar la página actual
-    echo '}';
-    echo '</script>';
-    die;
-}
-//TERMINO DE VERIFICACION DE CORREOS
-
 mysqli_query(conectar(),$sql);
 
 ?>
