@@ -48,7 +48,7 @@ function validar_signup(){
         return false;
     }
 
-    if(document.form.antecedentes.value==""){
+    if(document.form.File.value==""){
         swal("Debe ingresar un antecedentes");
         document.form.antecedentes.focus();
         return false;

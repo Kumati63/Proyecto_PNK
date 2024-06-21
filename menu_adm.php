@@ -8,13 +8,13 @@ if(isset($_SESSION['usu']))
 {
     switch($_SESSION['tipo']){
         case 1: $tipo=1;
-            $_SESSION['id_usuario'];
+            $tipo="ADMINISTRADOR";
             break;
         case 2: $tipo=2;
-            $_SESSION['id_usuario'];
+            $tipo="PROPIETARIO";
             break;
         case 3: $tipo=3;
-            $_SESSION['id_usuario'];
+            $tipo="VENDEDOR";
             break;
     }
 
@@ -41,46 +41,314 @@ if(isset($_SESSION['usu']))
     <script src="js/validar_adm.js""></script>
     <title>Adm.Usuarios</title>
     <style>
-        #buscador{
+        #buscador-lista-usuarios{
             width: 300px;
             height: 40px;
             border-radius: 10px;
             border: none;
         }
 
-        #buscador:focus{
+        #buscador-lista-usuarios:focus{
             box-shadow: none;
             outline: none;
         }
-        #buscador::placeholder{
+        #buscador-lista-usuarios::placeholder{
             font-size: 15px;
             font-weight: 500;
             padding-top: 10px;
         }
+        #preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #preview img {
+            margin-top:25px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+        }
     </style>
     <script>
         $(function() {
+            $(document).ready(function() {
+                $(document).on("contextmenu", function(e) {
+                    e.preventDefault();
+                });
+            });
+            $("#no1").hide();
+            $("#yes1").hide();
+            $("#no2").hide();
+            $("#yes2").hide();
+            $('#invalid').hide();
+            cargar_lista_usuarios();
+            $("#buscador").on( "keyup", function() {
+                cargar_lista_usuarios($("#buscador").val());
+            });
+
+            $('#email').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","whrgba(71, 71, 71, 0.61)ite");
+                    validaremailrepetido();
+                }
+            } );
+            $('#email').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9@. ]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            $('#rut').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                    validarrutrepetido();
+                }
+            } );
             
-        });
+            $('#rut').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^0-9@.-]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            
+            $('#tipo_usuario').on( "blur", function()
+            {
+                if ($(this).val() === "9") {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#telefono').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            
+            $('#Nombre').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");;
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#Nombre').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 ]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            $('#contrasena').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#contrasena').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 !#$%&()*+-./:;=?@[\]{|}~]/gi, '');
+                $(this).val(sanitizedValue);
+            });
 
-        // $(function() {
-        //     $("#adm-users").hide();
-        //     $('#new-user').on( "click", function() {
-        //         $("#adm-users").show();
-        //     } );
-        //     $('#btn-edit-user').on( "click", function() {
-        //         $("#adm-users").show();
-        //     } );
-        // });
+            $('#Repetir_contrasena').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#Repetir_contrasena').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 !#$%&()*+-./:;=?@[\]{|}~]/gi, '');
+                $(this).val(sanitizedValue);
+            });
 
+            $('#antecedentes').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#nacimiento').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+
+            //setting the date of birthday not more than the 16 years ago
+            var today = new Date();
         
+            // Calculate max date (16 years ago)
+            var maxYear = today.getFullYear() - 16;
+            var maxMonth = today.getMonth() + 1; // Months are zero-indexed, so we add 1
+            var maxDay = today.getDate();
+            
+            if (maxMonth < 10) maxMonth = '0' + maxMonth;
+            if (maxDay < 10) maxDay = '0' + maxDay;
+            
+            var maxDate = maxYear + '-' + maxMonth + '-' + maxDay;
+            
+            // Calculate min date (100 years ago)
+            var minYear = today.getFullYear() - 100;
+            var minMonth = today.getMonth() + 1; // Months are zero-indexed, so we add 1
+            var minDay = today.getDate();
+            
+            if (minMonth < 10) minMonth = '0' + minMonth;
+            if (minDay < 10) minDay = '0' + minDay;
+            
+            var minDate = minYear + '-' + minMonth + '-' + minDay;
+            
+            // Set min and max attributes
+            document.getElementById('nacimiento').setAttribute("max", maxDate);
+            document.getElementById('nacimiento').setAttribute("min", minDate);
+            "9"
+            $('#estado').on( "blur", function()
+            {
+                if ($(this).val() === "9") {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border","3px solid rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#sexo').on( "blur", function()
+            {
+                if ($(this).val() === "Seleccionar") {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border","3px solid rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#buscador').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 .-]/gi, '');
+                $(this).val(sanitizedValue);
+            });
 
+            $('#Repetir_contrasena').on('keyup', function() {
+                var password = $('#contrasena').val();
+                var confirmPassword = $(this).val();
+
+                if (password !== confirmPassword) {
+                    $('#contrasena').css('border', '3px solid red');
+                    $('#Repetir_contrasena').css('border', '3px solid red');
+                } else {
+                    $('#contrasena').css('border', '3px solid green');
+                    $('#Repetir_contrasena').css('border', '3px solid green');
+                }
+            });
+            $('#File').on("blur", function() {
+            if ($(this).val().length === 0) {
+                $(this).css("border-color","red");
+            } else {
+                $(this).css("border-color","white");
+            }
+            });
+
+            const allowedExtensions = ['jpg', 'jpeg', 'png']; // Allowed file extensions
+            $('#File').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    const fileName = file.name;
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    if (allowedExtensions.indexOf(fileExtension) === -1) {
+                        $('#invalid').show();
+                        $(this).css("border","3px solid red");
+                        this.value = ''; // Clear the input value to prevent form submission
+                    } else {
+                        $('#invalid').hide();
+                        $(this).css("border","3px solid green");
+                        showPreview(file);
+                    }
+                }
+            });
+
+            function showPreview(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview').html('<img src="' + e.target.result + '" width="200px">');
+                }
+                reader.readAsDataURL(file);
+            }
+
+        });
+        
+        
+        function cargar_lista_usuarios(buscador)
+        {
+            $.ajax({
+                type: "POST",
+                url: "functions/lista_usuarios_adm.php",
+                data: "buscador="+$("#buscador").val(),
+                success: function(response)
+                {
+                    $("#lista-usuarios").html(response);
+                }
+            });
+        }
+
+        function validarrutrepetido()
+        {
+                $.ajax({
+                type: "POST",
+                url: 'functions/validarrepetido.php',
+                data: "rut-usu="+$("#rut").val(),
+                success: function(response)
+                    {
+                        if (response==0){
+                            $("#no1").hide();
+                            $("#yes1").show();
+                            
+                            $('#rut').css("border-color","green");
+                        }else{
+                            $("#no1").show();
+                            $("#yes1").hide();
+                            
+                            $('#rut').css("border-color","red"); 
+                        }
+                    }
+                });
+            
+        }
+
+        function validaremailrepetido()
+        { 
+            $.ajax({
+            type: "POST",
+            url: 'functions/validarrepetido.php',
+            data: "email-usu="+$("#email").val(),
+            success: function(response)
+                {
+                   if (response==0){
+                        $("#no2").hide();
+                        $("#yes2").show();
+                        
+                        $('#email').css("border-color","green");
+                    }else{
+                        $("#no2").show();
+                        $("#yes2").hide();
+                        
+                        $('#email').css("border-color","red"); 
+                    }
+                }
+            });
+        }
+        
     </script>
 </head>
 <body>
 
     <?php
-        if($_SESSION['tipo']==1){// Si es ADMINISTRADOR mostrara la lista de usuarios
+        if($tipo="ADMINISTRADOR"){// Si es ADMINISTRADOR mostrara la lista de usuarios
     ?>
     <!-- header -->
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -100,7 +368,7 @@ if(isset($_SESSION['usu']))
             </button>
             <ul class="dropdown-menu">
                 <!-- Dropdown menu links -->
-                <li><a class="dropdown-item" href="perfil.php">Editar Perfil</a></li>
+                <li><a class="dropdown-item" href="perfil.php">Perfil</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="functions/cerrar.php">Cerrar Sesión</a></li>
             </ul>
@@ -116,12 +384,14 @@ if(isset($_SESSION['usu']))
             <div class="card">
                 <div class="card-header alineartexto">Administración de Usuarios</div>
                 <div class="card-body">
-                    <form action="functions/crud_usuarios.php" method="post" name="form" class="form-container">
+                    <form action="functions/crud_usuarios.php" method="post" name="form" class="form-container" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-rut">Rut</label><br>
-                                    <input class="form-control" id="rut "name="rut" type="text" placeholder="Rut"
+                                    <input class="form-control" maxlength="12" id="rut" name="rut" type="text" placeholder="Rut"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_usuario['rut'];} ?>">
+                                    <p id="no1" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Rut ya registrado</p>
+                                    <p id="yes1" style="color: green; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Rut disponible</p>
                                 </div>
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-tipo_Usuario">Tipo Usuario</label><br>
@@ -146,13 +416,15 @@ if(isset($_SESSION['usu']))
                             <div class="row">
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-nombre">Nombre</label><br>
-                                    <input class="form-control" name="Nombre" type="text" placeholder="Nombre Completo"
+                                    <input class="form-control" id="Nombre" name="Nombre" type="text" placeholder="Nombre Completo"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nombre'];} ?>">
                                 </div>
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-email">Email</label><br>
                                     <input class="form-control" id="email" name="email" type="email" placeholder="Email"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_usuario['email'];} ?>">
+                                    <p id="no2" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Email ya registrado</p>
+                                    <p id="yes2" style="color: green; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Email disponible</p>
                                 </div>
                             </div>
                             <br>
@@ -167,7 +439,7 @@ if(isset($_SESSION['usu']))
                                 </div>
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-telefono">Telefono</label><br>
-                                    <input class="form-control" type="text" id="telefono" name="Telefono" placeholder="Telefono"
+                                    <input class="form-control" type="text" maxlength="12" id="telefono" name="Telefono" placeholder="Telefono"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_usuario['telefono'];} ?>">
                                 </div>
                             </div>
@@ -187,6 +459,28 @@ if(isset($_SESSION['usu']))
                                     value="<?php if (isset($_GET['id'])){ echo $datos_usuario['nacimiento'];} ?>">
                                 </div>
                             </div>
+                            <br>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <label class="input-icon" for="lbl-File">Imagenes</label><br>
+                                    <input class="form-control" type="file" id="File" name="File" placeholder="File">
+                                    <label id="invalid" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Archivo invalido, solo se admiten 'jpg', 'jpeg', 'png'</label>
+                                    <label class="input-icon" style="font-weight: bold; font-size: 16px; margin-left: 20px; margin-top: 35px; "
+                                    >Nota: no se soportan imagenes con un peso mayor a 20 MB</label><br>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <div id="preview">
+                                        <?php
+                                            if(isset($_GET['id'])){
+                                        ?>
+                                            <!-- <img src="img\fotos\monk_ravee_2__dnd__by_0tacoon_ddhle67-fullview.jpg" alt="" width="150px" style="margin-left: 150px;"> -->
+                                            <img src="img/fotos/<?php if($datos_usuario['imgPerfil']==''){ echo "no_prof_pic.jpg"; }else{ echo $datos_usuario['imgPerfil'];}?>" width="200px">
+                                        <?php
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
                             <?php if (!isset($_GET['id']))
                             {
                             ?>
@@ -201,6 +495,7 @@ if(isset($_SESSION['usu']))
                                         <input class="form-control" type="password" id="Repetir_contrasena" name="Repetir_contrasena" placeholder="Repetir contrasena">
                                     </div>
                                 </div>
+                                
                             <?php
                             }
                             ?>
@@ -233,109 +528,29 @@ if(isset($_SESSION['usu']))
 
     <hr>
 
+    <div id="cabecera" class="bg-secondary bg-gradient">
+                    <div class="row" style="margin: auto; padding: 12px;">
+                        <div class="col col-sm-5 col-xs-12" style="display: flex; align-items: start; padding: 15px;">
+                                <h4 style="font-size: 25px; padding-right: 10px; color:#fff;">Lista De <span>Usuarios</span></h4>
+                                <button id="new-user" class="btn btn-sm btn-primary BOTONES" >Nuevo Usuario</button>
+                        </div>
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="btn_group" style="padding: 10px">
+                                <input type="text" id="buscador" placeholder="Buscar">
+                                <button id="btn-close" class="btn btn-default" title="Actualizar"><img src="img\menu-icons/reload.png" alt="" width="30px" onclick="#"></button>
+                                <button id="btn-close" class="btn btn-default" title="Pdf"><img src="img/menu-icons/pdf.png" alt="" width="30px"></button>
+                                <a href="functions\exportexcel.php">
+                                    <button id="btn-close" class="btn btn-default" title="Excel"><img src="img\menu-icons/exel.png" alt="" width="30px"></button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     <!-- LISTA DE USUARIOS -->
-    <div id="contenedor-usuarios">
-        <div class="card">
-            <div class="bg-secondary bg-gradient">
-                <div class="row" style="margin: auto; padding: 12px;">
-                    <div class="col col-sm-5 col-xs-12" style="display: flex; align-items: start; padding: 15px;">
-                            <h4 style="font-size: 25px; padding-right: 10px; color:#fff;">Lista De <span>Usuarios</span></h4>
-                            <button id="new-user" class="btn btn-sm btn-primary BOTONES" >Nuevo Usuario</button>
-                    </div>
-                    <div class="col-sm-7 col-xs-12">
-                        <div class="btn_group" style="padding: 10px">
-                            <input id="buscador" type="text" placeholder="Buscar">
-                            <button id="btn-close" class="btn btn-default" title="Actualizar"><img src="img\menu-icons/reload.png" alt="" width="30px" onclick="#"></button>
-                            <button id="btn-close" class="btn btn-default" title="Pdf"><img src="img/menu-icons/pdf.png" alt="" width="30px"></button>
-                            <a href="functions\exportexcel.php">
-                                <button id="btn-close" class="btn btn-default" title="Excel"><img src="img\menu-icons/exel.png" alt="" width="30px"></button>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card-body">
-            <div class="panel-body table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr class="alineartexto">
-                                <th>#</th>
-                                <th>rut</th>
-                                <th>Nombre</th>
-                                <th>Correo</th>
-                                <th>Estado</th>
-                                <th>Tipo Usuario</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                            $con=1;
-                            $sql=   "SELECT `tipo_usuario`.`tipo`,`usuarios`.* FROM `usuarios` INNER JOIN `tipo_usuario` ON `tipo_usuario`.`id_tipo` = `usuarios`.`id_tipo`";
-                            $result=mysqli_query(conectar(),$sql);
-                            $cont=mysqli_num_rows($result);
-                            
-                            while($datos=mysqli_fetch_array($result))
-                            {
-                        ?>
-                            <tr class="alineartexto">
-                                <td style="padding-top:20px"><?php echo $con; $con++;?></td>
-                                <td style="padding-top:20px"><?php echo $datos['rut'];?></td>
-                                <td style="padding-top:20px"><?php echo $datos['nombre'];?></td>
-                                <td style="padding-top:20px"><?php echo $datos['email'];?></td>
-                                
-                                <td  style="padding-top:17px"><?php 
-                                    if($datos['estado']==1)
-                                    {
-                                        ?>
-                                        <a href="functions/crud_usuarios.php?id=<?php echo $datos['id_usuario'];?>&estado=1">
-                                            <img src="img/menu-icons/ACTIVO.png" alt="" width="80px">
-                                        </a>
-                                        <?php 
-                                    }else{
-                                    ?>
-                                        <a href="functions/crud_usuarios.php?id=<?php echo $datos['id_usuario'];?>&estado=0">
-                                            <img src="img/menu-icons/INACTIVO.png" alt="" width="80px">
-                                        </a>
-                                    <?php } 
-                                    
-                                    ?>
-                                </td>
-                                
-                                <td  style="padding-top:20px"><?php echo $datos['tipo'];?></td>
-                                <td>
-                                    <a href="menu_adm.php?id=<?php echo $datos['id_usuario'];?>" style="text-decoration: none;">
-                                        <button type="button" onclick="" class="btn btn-default" id="btn-close" title="Editar">
-                                            <img src="img\menu-icons/edit_icon.jpg" alt="" width="30px">
-                                        </button>
-                                    </a>
-                                    <a onclick="javacript:return confirm('Desea eliminar al usuario <?php echo $datos['nombre'];?>?')" href="functions/crud_usuarios.php?id=<?php echo $datos['id_usuario'];?>&eliminar&id_usu=<?php echo $_SESSION['id_usuario']; ?>" style="text-decoration: none;">
-                                        <button type="button" name="btn_eliminar" onclick="" class="btn btn-default" id="btn-close" title="Eliminar">
-                                            <img src="img\menu-icons/trash.png" alt="" width="30px">
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-
-                            <?php
-                            }
-                            ?>
-
-                        </tbody>
-                    </table>
-                </div>
-                <div class="panel-footer">
-                    <div class="row">
-                        <div class="col col-sm-8 col-xs-6">Cantidad de Usuarios: <b><?php echo $cont; ?></b></div>
-                        <div class="col col-sm-4 col-xs-6">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="lista-usuarios">
+        
     </div>
+    
     <?php
         }else{
             header("Location:error.html");

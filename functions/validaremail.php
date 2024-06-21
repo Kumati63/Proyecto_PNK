@@ -1,16 +1,18 @@
 <?php
 include("setup.php");
 
-$verificar_correo = "SELECT * FROM usuarios WHERE email='".$_POST['email-usu']."' and estado=1";
 
-//EJECUTAMOS LA QUERY
-$result=mysqli_query(conectar(),$verificar_correo);
+    $verificar_correo = "SELECT * FROM usuarios WHERE email='".$_POST['email-usu']."' and estado=1";
 
-//  OBTENEMOS LSO DATOS DE LA TABLA
-$datos=mysqli_fetch_array($result);
+    //EJECUTAMOS LA QUERY
+    $result=mysqli_query(conectar(),$verificar_correo);
 
-// MOSTRAR CANTIDAD DE RESULTADOS
-$cont = mysqli_num_rows($result);
+    //  OBTENEMOS LSO DATOS DE LA TABLA
+    $datos=mysqli_fetch_array($result);
 
-echo $cont;
+    // MOSTRAR CANTIDAD DE RESULTADOS
+    $cont = mysqli_num_rows($result);
+
+    echo $cont;
+
 ?>

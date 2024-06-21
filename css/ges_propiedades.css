@@ -90,3 +90,10 @@ textarea.form-control{
     width: 1200px;
     margin: auto;
 }
+
+#img-shower{
+    border: 1px solid rgba(128, 128, 128, 0.515);
+    height: 320px;
+    width: 550px;
+    margin-top: 40px;
+}

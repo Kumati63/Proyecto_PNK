@@ -13,11 +13,31 @@
     <script>
                 
         $(function() {
+            $(document).ready(function() {
+                $(document).on("contextmenu", function(e) {
+                    e.preventDefault();
+                });
+            });
             $("#no").hide();
             $("#yes").hide();
-            $('#email').on( "blur", function() {
-                validaremail();
-            } );
+            $("#submit-button").prop("disabled",true);
+            toggleStyles(true);
+            $('#email').on( "blur", function() 
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                    validaremail();
+                }
+            });
+            $('#contrasena').on( "blur", function() {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red");
+                }else{
+                    $(this).css("border-color","white");
+                }
+            });
         });
         
         function validar_login(){
@@ -53,9 +73,23 @@
                         $("#no").hide();
                         $("#yes").show();
                         $('#email').css("border-color","green"); 
+                        $("#submit-button").prop("disabled",false);
+                        toggleStyles(false);
                     }
                 }
             });
+            
+        }
+        function toggleStyles(applyStyles) {
+            if (applyStyles) {
+                $("#submit-button").css({
+                    "background-color": "gray",
+                    "color": "black",
+                    "border": "none"
+                });
+            } else {
+                $("#submit-button").removeAttr("style");
+            }
         }
     </script>
 </head>
@@ -65,7 +99,7 @@
         <form method="post" name="form" action="functions/login-process.php">
 
             <div class="logo_image">
-                <a href="index.html"><img src="img/icon.png" alt="icon" class="image" ></a>
+                <a href="index.php"><img src="img/icon.png" alt="icon" class="image" ></a>
             </div>
 
             <h1 id="title">Login</h1>
@@ -96,7 +130,7 @@
                 </div>
             </div>
                 
-            <button class="button" type="button" onclick="validar_login()">Enviar</button>
+            <button class="button" id="submit-button" type="button" onclick="validar_login()">Enviar</button>
             <br><br>
             <span>Nuevo usuario?<a href="signup_prop.html"> Crear una cuenta</a></span>
             

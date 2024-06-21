@@ -13,85 +13,236 @@
     <script src="js\validar_singup_gestion.js"></script>
     <script>
         $(function() {
+            $(document).ready(function() {
+                $(document).on("contextmenu", function(e) {
+                    e.preventDefault();
+                });
+            });
+            var val_email = false;
+            var val_rut = false;
             $("#no1").hide();
             $("#yes1").hide();
             $("#no2").hide();
             $("#yes2").hide();
-            $('#email').on( "blur", function() {
-                validaremailrepetido();
-            } );
-            $('#rut').on( "blur", function() {
-                validarrutrepetido();
-            } );
-        });
+            $("#invalid").hide();
+            $("#submit-button").prop("disabled",true);
+            toggleStyles(true);
+            
+            
 
-        function validate_empty(){
-            $(document).ready(function(){
-                $('#myForm input[type="text"]').blur(function(){
-                    if(!$(this).val()){
-                        $(this).css("border-color","red"); 
-                    } else{
-                        $(this).css("border-color","green");
-                    }
-                });
+            $('#email').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red");
+                }else{
+                    $(this).css("border-color","white");
+                    validaremailrepetido();
+                }
+            } );
+            $('#email').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9@. ]/gi, '');
+                $(this).val(sanitizedValue);
             });
-        }
+            $('#rut').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red");
+                }else{
+                    $(this).css("border-color","white");
+                    validarrutrepetido();
+                }
+            } );
+            
+            $('#rut').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^0-9@.-]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+
+            $('#telefono').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                }
+            } );
+            $('#telefono').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^0-9+]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            
+            $('#nombre').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                }
+            } );
+            $('#nombre').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 ]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            $('#contrasena').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                }
+            } );
+            $('#contrasena').on('input', function() {
+                var sanitizedValue = $(this).val().replace(/[^a-z0-9 !#$%&()*+-./:;=?@[\]{|}~]/gi, '');
+                $(this).val(sanitizedValue);
+            });
+            $('#File').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                }
+            } );
+            const allowedExtensions = ['pdf']; // Allowed file extensions
+            $('#File').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    const fileName = file.name;
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    if (allowedExtensions.indexOf(fileExtension) === -1) {
+                        $('#invalid').show();
+                        $(this).css("border","3px solid red");
+                        this.value = ''; // Clear the input value to prevent form submission
+                    } else {
+                        $('#invalid').hide();
+                        $(this).css("border","3px solid green");
+                    }
+                }
+            });
+            $('#nacimiento').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border-color","red"); ;
+                }else{
+                    $(this).css("border-color","white");
+                }
+            } );
+
+            //setting the date of birthday not more than the 16 years ago
+            var today = new Date();
+        
+            // Calculate max date (16 years ago)
+            var maxYear = today.getFullYear() - 16;
+            var maxMonth = today.getMonth() + 1; // Months are zero-indexed, so we add 1
+            var maxDay = today.getDate();
+            
+            if (maxMonth < 10) maxMonth = '0' + maxMonth;
+            if (maxDay < 10) maxDay = '0' + maxDay;
+            
+            var maxDate = maxYear + '-' + maxMonth + '-' + maxDay;
+            
+            // Calculate min date (100 years ago)
+            var minYear = today.getFullYear() - 100;
+            var minMonth = today.getMonth() + 1; // Months are zero-indexed, so we add 1
+            var minDay = today.getDate();
+            
+            if (minMonth < 10) minMonth = '0' + minMonth;
+            if (minDay < 10) minDay = '0' + minDay;
+            
+            var minDate = minYear + '-' + minMonth + '-' + minDay;
+            
+            // Set min and max attributes
+            document.getElementById('nacimiento').setAttribute("max", maxDate);
+            document.getElementById('nacimiento').setAttribute("min", minDate);
+
+            $('#sexo').on( "blur", function()
+            {
+                if ($(this).val() === "Seleccionar") {
+                    $(this).css("border","2px solid red"); ;
+                }else{
+                    $(this).css("border","2px solid white");
+                }
+            } );
+
+            if (val_email === true && val_rut === true) {
+                $("#submit-button").prop("disabled", false);
+                toggleStyles(false);
+            }
+        });
 
         function validarrutrepetido()
         {
-                $.ajax({
+            $.ajax({
                 type: "POST",
                 url: 'functions/validarrepetido.php',
                 data: "rut-usu="+$("#rut").val(),
-                success: function(response)
-                    {
-                        if (response==0){
-                            $("#no1").hide();
-                            $("#yes1").show();
-                            
-                            $('#rut').css("border-color","green");
-                        }else{
-                            $("#no1").show();
-                            $("#yes1").hide();
-                            
-                            $('#rut').css("border-color","red"); 
-                        }
+                success: function(response) {
+                    if (response == 0) {
+                        $("#no1").hide();
+                        $("#yes1").show();
+                        val_rut = true;
+                        $('#rut').css("border-color", "green");
+                    } else {
+                        $("#no1").show();
+                        $("#yes1").hide();
+                        val_rut = false; // Ensure to reset if validation fails
+                        $('#rut').css("border-color", "red");
                     }
-                });
-            
+                    // Check if both validations are successful
+                    if (val_email === true && val_rut === true) {
+                        $("#submit-button").prop("disabled", false);
+                        toggleStyles(false);
+                    }
+                }
+            });
         }
 
         function validaremailrepetido()
         { 
             $.ajax({
-            type: "POST",
-            url: 'functions/validarrepetido.php',
-            data: "email-usu="+$("#email").val(),
-            success: function(response)
-                {
-                   if (response==0){
+                type: "POST",
+                url: 'functions/validarrepetido.php',
+                data: "email-usu="+$("#email").val(),
+                success: function(response) {
+                    if (response == 0) {
                         $("#no2").hide();
                         $("#yes2").show();
-                        
-                        $('#email').css("border-color","green");
-                    }else{
+                        val_email = true;
+                        $('#email').css("border-color", "green");
+                    } else {
                         $("#no2").show();
                         $("#yes2").hide();
-                        
-                        $('#email').css("border-color","red"); 
+                        val_email = false; // Ensure to reset if validation fails
+                        $('#email').css("border-color", "red");
+                    }
+                    // Check if both validations are successful
+                    if (val_email === true && val_rut === true) {
+                        $("#submit-button").prop("disabled", false);
+                        toggleStyles(false);
                     }
                 }
             });
+        }
+        function toggleStyles(applyStyles) {
+            if (applyStyles) {
+                $("#submit-button").css({
+                    "background-color": "gray",
+                    "color": "black",
+                    "border": "none"
+                });
+            } else {
+                $("#submit-button").removeAttr("style");
+            }
         }
     </script>
 </head>
 <body>
 
     <div class="container" >
-        <form method="post" id="apply-form" name="form" action="functions/signup-process2.php">
+        <form method="post" id="apply-form" name="form" action="functions/signup-process2.php" enctype="multipart/form-data">
 
             <div class="logo_image">
-                <a href="index.html"><img src="img/icon.png" alt="icon" class="image" ></a>
+                <a href="index.php"><img src="img/icon.png" alt="icon" class="image" ></a>
             </div>
     
             <h1 id="title">REGISTRARSE</h1>
@@ -106,7 +257,7 @@
 
                     <div class="input-box">
                         <label for="rut">Rut</label><br>
-                        <input type="text" placeholder="Ingresar Rut" id="rut" name="rut" required><br>
+                        <input type="text" placeholder="Ingresar Rut" maxlength="12" id="rut" name="rut" required><br>
                         <p id="no1" style="color: red; font-size: 13px; margin-left: 20px; margin-top: -10px;">Rut ya registrado</p>
                         <p id="yes1" style="color: green; font-size: 13px; margin-left: 20px; margin-top: -10px;">Rut disponible</p>
                     </div>
@@ -124,7 +275,7 @@
 
                     <div class="input-box">
                         <label for="telefono" >Telefono</label><br>
-                        <input type="number" placeholder="Ingresar Telefono" id="telefono" name="telefono" required><br>
+                        <input type="text" maxlength="12" placeholder="Ingresar Telefono" id="telefono" name="telefono" required><br>
                     </div>
 
                     <div class="input-box">
@@ -143,8 +294,9 @@
 
                     <div class="input-box">
                         <div class="files">
-                            <label for="antecedentes">Certificado de Antecedentes</label>
-                            <input type="file" id=antecedentes name="antecedentes" required>
+                            <label for="File">Certificado de Antecedentes</label>
+                            <input type="file" id="File" name="File" required>
+                            <label id="invalid" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">Archivo invalido, solo se admiten 'pdf'</label>
                         </div>
                     </div>
                     

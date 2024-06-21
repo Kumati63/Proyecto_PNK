@@ -28,6 +28,24 @@ if(isset($_SESSION['usu']))
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="js/bootstrap.bundle.min.js"></script>
     <title>Menu</title>
+    <style>
+        #profile-button{
+            position: absolute;
+            top:0;
+            right:0;
+            margin-top: 60px;
+            margin-right: 30px;
+        }
+    </style>
+    <script>
+        $(function() {
+            $(document).ready(function() {
+                    $(document).on("contextmenu", function(e) {
+                        e.preventDefault();
+                    });
+                });
+        });
+    </script>
 </head>
 <body>
     <section class="vh-100" style="background-color: #eee;">
@@ -37,6 +55,11 @@ if(isset($_SESSION['usu']))
             <div class="card" style="border-radius: 15px;">
             <div class="card-body text-center">
                 <h1 id="title">Bienvenido al sistema</h1>
+                <div id="profile-button">
+                    <button type="button" id="btn-close" class="btn1">
+                        <a id="cerrar-sesion" href="perfil.php">My profile</a>
+                    </button>
+                </div>
                 <!-- DECLARACIÓN DE IMAGEN DEL MENU SEGÚN TIPO DE USUARIO-->
                 <div class="mt-3 mb-4">
                     <?php
@@ -89,6 +112,7 @@ if(isset($_SESSION['usu']))
                 ?> 
                 <span class="mx-2"></span></p>
                 
+
                 <!-- DECLARACIÓN DE BOTONES SEGUN TIPO DE USUARIO-->
                 <div class="mb-4 pb-2">
                     <?php
@@ -122,7 +146,7 @@ if(isset($_SESSION['usu']))
                     <?php
                         if(($_SESSION['tipo']==1) || ($_SESSION['tipo']==2)){// Si es ADMINISTRADOR Y PROPIETARIO mostrara el botón de administrar usuarios
                     ?>
-                    <a href="perfil.php">
+                    <a href="Propiedades.php">
                         <button type="button" class="btn1">
                             <img src="img\menu-icons\admprop.jpg" alt="" style="width: 90px"><br>
                             Adm. <br>Propietarios
