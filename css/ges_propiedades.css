@@ -97,3 +97,26 @@ textarea.form-control{
     width: 550px;
     margin-top: 40px;
 }
+
+.edit_images{
+    position: absolute;
+    z-index: 100000;
+    border: 3px solid;
+    width: 800px;
+    height: 600px;
+    margin-left: 500px;
+    margin-top: -100px;
+    background-color: #fff;
+}
+
+.edit_images #editimagescontainer{
+    margin: 10px;
+    width: 775px;
+    height: 575px;
+}
+
+#editimagescontainertitle{
+    display: flex;
+    padding-left: 20px;
+    gap: 430px;
+}

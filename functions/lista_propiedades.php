@@ -117,7 +117,8 @@ if(isset($_SESSION['usu']))
                             ?>
                             <tr class="alineartexto">
                                 <td style="padding-top:20px"><?php echo $con+1; $con++;?></td>
-                                <td><img src="img/fotosProp/<?php echo $datos['Foto'];?>" width="50px"></td>
+                                <td><a id="openeditimages" href="Propiedades.php?id=<?php echo $datos['idpropiedad'];?>"><img src="img/fotosProp/<?php echo $datos['Foto'];?>" width="50px"></a></td>
+                                
                                 <td style="padding-top:20px"><?php echo $datos['nombre'];?></td>
                                 <td style="padding-top:20px"><?php echo $datos['Direccion'];?></td>
                                 <td style="padding-top:20px"><?php echo $datos['tipo'];?></td>

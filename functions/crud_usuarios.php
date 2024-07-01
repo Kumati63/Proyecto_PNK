@@ -17,7 +17,7 @@ if(isset($_GET['eliminar']))
             }
         </script>";
         exit;
-}
+}}
 
 switch($_POST['accion_btn']){
     
@@ -37,7 +37,7 @@ switch($_POST['accion_btn']){
 
 
     
-}
+
 
 function Enviar(){
     echo $_FILES['File']['name']."<br>";

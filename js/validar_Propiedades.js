@@ -50,10 +50,28 @@ function validar(btn){
             document.form.areaconstruida.focus();
             return false;
         }
-        if(document.form.sectores.value=="")
+        if(document.form.Region.value=="0")
+            {
+                swal("Debe ingresar una Region");
+                document.form.Region.focus();
+                return false;
+            }
+        if(document.form.Provincia.value=="0")
+            {
+                swal("Debe ingresar una Provincia");
+                document.form.Provincia.focus();
+                return false;
+            }
+        if(document.form.Comuna.value=="0")
+            {
+                swal("Debe ingresar una Comuna");
+                document.form.Comuna.focus();
+                return false;
+            }
+        if(document.form.Sector.value=="0")
             {
                 swal("Debe ingresar un Sector");
-                document.form.sectores.focus();
+                document.form.Sector.focus();
                 return false;
             }
         if(document.form.tipo_prop.value=="")

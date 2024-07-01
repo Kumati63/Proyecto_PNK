@@ -6,7 +6,7 @@
             "localhost",    //servidor
             "root",         //usuario  
             "",             //contrasena
-            "proyecto_pnk2"  //base de datos
+            "proyecto_pnk3"  //base de datos
         );
         return $con;
     }

@@ -47,6 +47,9 @@ if(isset($_SESSION['usu']))
                     'areaTotal_terreno' => $row['areaTotal_terreno'],
                     'areaConstruida' => $row['areaConstruida'],
                     'tipo_propiedad' => $row['tipo_propiedad'],
+                    'idregion' => $row['idregion'],
+                    'idprovincias' => $row['idprovincias'],
+                    'idcomunas' => $row['idcomunas'],
                     'idsector' => $row['idsector']
                 ];
             }
@@ -112,13 +115,62 @@ if(isset($_SESSION['usu']))
                     e.preventDefault();
                 });
             });
+            $("#Region").on("change", function() {
+                alert($("#Region").val())
+                if ($("#Region").val() === "0") {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","green");
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "functions/combobox.php",
+                    data: {id: $("#Region").val(), tipo: 1},
+                    success: function(response) {
+                        $("#Provincia").html(response);
+                    }
+                });
+            });
+
+            $("#Provincia").on("change", function() {
+                $.ajax({
+                    type: "POST",
+                    url: "functions/combobox.php",
+                    data: {id: $("#Provincia").val(), tipo: 2},
+                    success: function(response) {
+                        $("#Comuna").html(response);
+                    }
+                });
+            });
+
+            $("#Comuna").on("change", function() {
+                $.ajax({
+                    type: "POST",
+                    url: "functions/combobox.php",
+                    data: {id: $("#Comuna").val(), tipo: 3},
+                    success: function(response) {
+                        $("#Sector").html(response);
+                    }
+                });
+            });
+
             $('#invalid').hide();
             $('#invalid2').hide();
+            $('#editimages').hide();
             cargar_lista_propiedades();
             $("#buscador").on( "keyup", function() {
                 cargar_lista_propiedades($("#buscador").val());
             });
-
+            $("#lista-usuarios").on("click", "#openeditimages", function(event) {
+                $('#showmsgeditimg').show();
+            });
+            $("#lista-usuarios").on("click", "#openeditimages", function(event) {
+                event.preventDefault(); // Evita que el enlace siga su URL
+                $('#editimages').show();
+            });
+            $("#closeimgeditor").on("click", function(event) {
+                $('#editimages').hide();
+            });
             $('#Nombre').on( "blur", function()
             {
                 if ($(this).val().length === 0) {
@@ -231,9 +283,33 @@ if(isset($_SESSION['usu']))
                     $(this).css("border-color","rgba(71, 71, 71, 0.61)");
                 }
             } );
-            $('#sectores').on( "blur", function()
+            $('#Region').on( "blur", function()
             {
                 if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#Provincia').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#Comuna').on( "blur", function()
+            {
+                if ($(this).val().length === 0) {
+                    $(this).css("border","3px solid red");
+                }else{
+                    $(this).css("border-color","rgba(71, 71, 71, 0.61)");
+                }
+            } );
+            $('#Sector').on( "blur", function()
+            {
+                if ($(this).val() === 0) {
                     $(this).css("border","3px solid red");
                 }else{
                     $(this).css("border-color","rgba(71, 71, 71, 0.61)");
@@ -347,6 +423,9 @@ if(isset($_SESSION['usu']))
                                     <label class="input-icon" for="lbl-Direccion">Dirección</label><br>
                                     <input class="form-control" id="Direccion" name="Direccion" type="text" placeholder="Dirección"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_propiedad['Direccion'];} ?>">
+				<span>Formato recomendable: </span><span style="font-size:13px; color:gray;">[Dirección], [Sector], [ciudad], [estado/provincia], [país]</span><br>
+                                    <span style="font-size:13px; color:gray; margin-left:40px;">Puede copiar y pegar la direccion que obtiene desde el google maps,</span><br>
+                                    <span style="font-size:13px; color:gray; margin-left:60px;">recomendable para que su dirección aparezca en el mapa</span>
                                 </div>
                             </div>
                             <br>
@@ -355,21 +434,66 @@ if(isset($_SESSION['usu']))
                                     <label class="input-icon" for="lbl-Precio">Precio (CLP)</label><br>
                                     <input class="form-control" id="Precio" name="Precio" type="text" placeholder="Precio"
                                     value="<?php if (isset($_GET['id'])){ echo $datos_propiedad['Precio'];} ?>"><br>
-                                    <label for="sectores">Sectores</label>
-                                    <select  name="sectores" id="sectores">
-                                        <option value="">Sectores</option>
+                                    <label for="Region">Region</label>
+                                    <select id="Region" name="Region">
+                                        <option value="0">Región</option>
                                         <?php
-                                            $sql="SELECT `sector`.*, `comunas`.`comuna` FROM `sector` INNER JOIN `comunas` ON `sector`.`idcomunas` = `comunas`.`idcomunas`";
-                                            $result=mysqli_query(conectar(),$sql);
-                                            while($datos_sectores=mysqli_fetch_array($result)){
+                                        $sql= "SELECT * FROM region WHERE estado = 1";
+                                        $result = mysqli_query(conectar(),$sql);
+                                        while($datos=mysqli_fetch_array($result)){
                                             ?>
-                                                <option class="form-control" value="<?php echo $datos_sectores['idsector'];?>"
-                                                <?php if (isset($_GET['id'])){if($datos_propiedad['idsector']==$datos_sectores['idsector']){?>selected<?php }}?>>
-                                                <?php echo $datos_sectores['sector']. " - " .$datos_sectores['comuna'] ;?></option>
+                                            <option value="
+                                            <?php echo $datos['idregion'];?>"<?php if (isset($_GET['id'])){if($datos_propiedad['idregion']==$datos['idregion']){?>selected<?php }}?>>
+                                            <?php echo $datos['region'];?></option>
                                             <?php
-                                            }
+                                        }
                                         ?>
-                                    </select>
+                                    </select><br><br>
+                                    <label for="Provincia">Provincia</label>
+                                    <select id="Provincia" name="Provincia">
+                                        <option value="0">Provincia</option>
+                                        <?php
+                                        $sql= "SELECT * FROM provincias WHERE estado = 1";
+                                        $result = mysqli_query(conectar(),$sql);
+                                        while($datos=mysqli_fetch_array($result)){
+                                            ?>
+                                            <option value="<?php echo $datos['idprovincias'];?>"
+                                            <?php if (isset($_GET['id'])){if($datos_propiedad['idprovincias']==$datos['idprovincias']){?>selected<?php }}?>>
+                                            <?php echo $datos['provincia'];?></option>
+                                            <?php
+                                        }
+                                        ?>
+                                    </select><br><br>
+                                    <label for="Comuna">Comuna</label>
+                                    <select id="Comuna" name="Comuna">
+                                        <option value="0">Comuna</option>
+                                        <?php
+                                        $sql= "SELECT * FROM comunas WHERE estado = 1";
+                                        $result = mysqli_query(conectar(),$sql);
+                                        while($datos=mysqli_fetch_array($result)){
+                                            ?>
+                                            <option value="<?php echo $datos['idcomunas'];?>"
+                                            <?php if (isset($_GET['id'])){if($datos_propiedad['idcomunas']==$datos['idcomunas']){?>selected<?php }}?>>
+                                            <?php echo $datos['comuna'];?></option>
+                                            <?php
+                                        }
+                                        ?>
+                                    </select><br><br>
+                                    <label for="Sector">Sector</label>
+                                    <select id="Sector" name="Sector">
+                                        <option value="0">Sector</option>
+                                        <?php
+                                        $sql= "SELECT * FROM sector WHERE estado = 1";
+                                        $result = mysqli_query(conectar(),$sql);
+                                        while($datos=mysqli_fetch_array($result)){
+                                            ?>
+                                            <option value="<?php echo $datos['idsector'];?>"
+                                            <?php if (isset($_GET['id'])){if($datos_propiedad['idsector']==$datos['idsector']){?>selected<?php }}?>>
+                                            <?php echo $datos['sector'];?></option>
+                                            <?php
+                                        }
+                                        ?>
+                                    </select><br><br>
                                     <label for="tipo_prop">Tipo Propiedad</label>
                                     <select name="tipo_prop" id="tipo_prop">
                                         <option value="">Tipo Propiedad</option>
@@ -389,13 +513,16 @@ if(isset($_SESSION['usu']))
                                 </div>
                                 <div class="col col-sm-6">
                                     <label class="input-icon" for="lbl-File">Imagenes</label><br>
-                                    <input class="form-control" type="file" id="File" name="File" placeholder="File" multiple="multiple">
+                                    <input class="form-control" type="file" id="File" name="File" placeholder="File">
                                     <label id="invalid" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">
                                         Archivo invalido, solo se admiten 'jpg', 'jpeg', 'png'</label>
                                     <label id="invalid2" style="color: red; font-weight: bold; font-size: 13px; margin-left: 20px; margin-top: 10px; margin-bottom: -37px;">
                                         Cantidad de imagenes supera el maximo de 10,<br>solo las primeras 10 imagenes seleccionadas se subiran</label>
                                     <label class="input-icon" style="font-weight: bold; font-size: 16px; margin-left: 20px; margin-top: 35px; "
-                                    >Nota: no se soportan imagenes con un peso mayor a 20 MB<br>no pueden subir mas de 10 imagenes</label><br><br><br>
+                                    >Nota: no se soportan imagenes con un peso mayor a 20 MB<br>no pueden subir mas de 10 imagenes</label>
+                                    <label id="showmsgeditimg" class="input-icon" style="font-weight: bold; font-size: 16px; margin-left: 20px; margin-top: 35px; "
+                                    >PARA EDITAR LAS IMAGENES DE LA PROPIEDAD, HACER CLICK EN LA IMAGEN DE LA PROPIEDAD <span style="color:red; font-size:25px;">DESPUES</span> DE QUE SE EMPIEZE A EDITAR<br>
+                                    (en la lista de usuarios)<p style="color:red;">aun implementandose</p></label><br><br><br>
                                     
                                 </div>
                             </div>
@@ -422,7 +549,7 @@ if(isset($_SESSION['usu']))
                                     
                                 </div>
                                 <div class="col col-sm-6">
-                                    <div id="preview">
+                                    <br><div id="preview">
                                         <?php
                                         if(isset($_GET['id'])) {
                                             foreach ($fotos as $foto) {
@@ -482,6 +609,27 @@ if(isset($_SESSION['usu']))
                         </div>
                     </div>
                 </div>
+
+    <!-- pop up window -->
+    <div class="edit_images" id="editimages">
+        <div id="editimagescontainer">
+            <div id="editimagescontainertitle">
+                <span>IMAGENES DE LA PROPIEDAD</span>
+                <button id="closeimgeditor">Cerrar</button>
+            </div>
+            <div id="preview">
+                <?php
+                if(isset($_GET['id'])) {
+                    foreach ($fotos as $foto) {
+                ?>
+                        <img src="img/fotosProp/<?php echo $foto; ?>" width="200px">
+                <?php
+                    }
+                }
+                ?>
+            </div>
+        </div>
+    </div>
     <!-- LISTA DE USUARIOS -->
     <div id="lista-usuarios">
         

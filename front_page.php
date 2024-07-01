@@ -178,7 +178,6 @@ include("functions/setup.php");
             </div>
         </form>
         <br>
-        <h6 style="display: flex; justify-content: center; align-items: center;">POR EL MOMENTO SOLO SE PUEDEN FILTRAR LA PROPIEDADES POR EL SECTOR</h6>
         <br>
         
         <div class="gallery" id="gallery">

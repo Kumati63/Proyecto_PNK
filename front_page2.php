@@ -1,19 +1,8 @@
 <?php
-
-session_start();
 include("functions/setup.php");
-if(isset($_SESSION['usu']))
-{
-    switch($_SESSION['tipo']){
-        case 1: $tipo="ADMINISTRADOR";
-            break;
-        case 2: $tipo="PROPIETARIO";
-            break;
-        case 3: $tipo="VENDEDOR";
-            break;
-    }
-?>
 
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -28,45 +17,86 @@ if(isset($_SESSION['usu']))
     <title>PNK Inmovilaria</title>
     <script>
         $(document).ready(function() {
+            cargar_propiedades();
+            $("#Region, #Provincia, #Comuna, #Sector, #Tipo, #precioMin, #precioMax").on("change", function() {
+                cargar_propiedades();
+            });
+
             $("#Region").on("change", function() {
                 $.ajax({
                     type: "POST",
                     url: "functions/combobox.php",
-                    data: "id="+$("#Region").val()+'&tipo=1',
+                    data: {id: $("#Region").val(), tipo: 1},
                     success: function(response) {
                         $("#Provincia").html(response);
                     }
                 });
             });
+
             $("#Provincia").on("change", function() {
                 $.ajax({
                     type: "POST",
                     url: "functions/combobox.php",
-                    data: "id="+$("#Provincia").val()+'&tipo=2',
+                    data: {id: $("#Provincia").val(), tipo: 2},
                     success: function(response) {
                         $("#Comuna").html(response);
                     }
                 });
             });
+
             $("#Comuna").on("change", function() {
                 $.ajax({
                     type: "POST",
                     url: "functions/combobox.php",
-                    data: "id="+$("#Comuna").val()+'&tipo=3',
+                    data: {id: $("#Comuna").val(), tipo: 3},
                     success: function(response) {
                         $("#Sector").html(response);
                     }
                 });
             });
         });
+
+        function cargar_propiedades() {
+            var precioMin = $("#precioMin").val() || 0;
+            var precioMax = $("#precioMax").val() || 10000000000;
+            mostrarLoader(); // Mostrar indicador de carga antes de hacer la petición AJAX
+            $.ajax({
+                type: "POST",
+                url: "functions/cargar_propiedades.php",
+                data: {
+                    Region: $("#Region").val(),
+                    Provincia: $("#Provincia").val(),
+                    Comuna: $("#Comuna").val(),
+                    Sector: $("#Sector").val(),
+                    Tipo: $("#Tipo").val(),
+                    precioMin: precioMin,
+                    precioMax: precioMax
+                },
+                success: function(response) {
+                    $("#gallery").html(response); // Actualizar el contenido de la galería con las propiedades cargadas
+                    ocultarLoader(); // Ocultar indicador de carga después de cargar las propiedades
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error en la carga de propiedades:", error);
+                    ocultarLoader(); // En caso de error, asegurar que el loader se oculte también
+                }
+            });
+        }
+        // Función para mostrar el indicador de carga
+        function mostrarLoader() {
+            $("#gallery").find(".loader").css("display", "block");
+        }
+
+        function ocultarLoader() {
+            $("#gallery").find(".loader").css("display", "none");
+        }
     </script>
 </head>
 <body>
     <header>
         <a href="index.php">
             <div class="logo" id="titulo"><img src="img/logo.png" alt="" width="430px"></div>
-        </a>
-        
+        </a> 
         <div class="menu-header">
             <a href="menu.php">Perfil</a>
             <a href="error.html">Contactanos</a>
@@ -87,6 +117,7 @@ if(isset($_SESSION['usu']))
         <form method="post" action="#">
             <div class="searcher" id="searcher">
                 <div class="selects">
+                    <span style="font-size:15px; font-weight: bold; color:white; display: flex; justify-content: center; align-items: center; padding:10px;" for="">Región</span>
                     <select id="Region" name="Region">
                         <option value="0">Región</option>
                         <?php
@@ -101,99 +132,55 @@ if(isset($_SESSION['usu']))
                     </select>
                 </div>
                 <div class="selects">
+                    <span style="font-size:15px; font-weight: bold; color:white; display: flex; justify-content: center; align-items: center; padding:10px;" for="">Provincia</span>
                     <select id="Provincia" name="Provincia">
                         <option value="0">Provincia</option>
                     </select>
                 </div>
                 <div class="selects">
+                    <span style="font-size:15px; font-weight: bold; color:white; display: flex; justify-content: center; align-items: center; padding:10px;" for="">Comuna</span>
                     <select id="Comuna" name="Comuna">
                         <option value="0">Comuna</option>
                     </select>
                 </div>
                 <div class="selects">
+                    <span style="font-size:15px; font-weight: bold; color:white; display: flex; justify-content: center; align-items: center; padding:10px;" for="">Sector</span>
                     <select id="Sector" name="Sector">
                         <option value="0">Sector</option>
                     </select>
                 </div>
                 <div class="selects">
+                    <span style="font-size:15px; font-weight: bold; color:white; display: flex; justify-content: center; align-items: center; padding:10px;" for="">Tipo Propiedad</span>
                     <select id="Tipo" name="Tipo">
-                        <option value="0">Tipo</option>
+                        <option value="0">Todas</option>
+                        <?php
+                            $sql="SELECT * FROM `tipo_propiedad`";
+                            $result=mysqli_query(conectar(),$sql);
+                            while($datos_tipo=mysqli_fetch_array($result)){
+                            ?>
+                                <option class="form-control" value="<?php echo $datos_tipo['idtipo_propiedad'];?>"
+                                <?php if (isset($_GET['id'])){if($datos_propiedad['tipo_propiedad']==$datos_tipo['idtipo_propiedad']){?>selected<?php }}?>>
+                                <?php echo $datos_tipo['tipo'];?></option>  
+                            <?php
+                            }
+                        ?>
                     </select>
                 </div>
-                <div class="search-button">
-                    <button type="submit">Buscar</button>
+                <div class="selects">
+                    <label style="font-size:15px; color:white" for="precioMin">Precio Mínimo</label><br>
+                    <input type="number" id="precioMin" name="precioMin" min="0" max="10000000000" step="1000000" >
+                </div>
+                <div class="selects">
+                    <label style="font-size:15px; color:white" for="precioMax">Precio Máximo</label><br>
+                    <input type="number" id="precioMax" name="precioMax" min="0" max="10000000000" step="1000000">
                 </div>
             </div>
         </form>
-        <br><br>
-        <div class="gallery">
-            <?php
-            $sql_propiedades = "SELECT 
-                    `fotografias`.`Foto`, 
-                    `tipo_propiedad`.`tipo`, 
-                    `usuarios`.`email`, 
-                    `sector`.`sector`, 
-                    `propiedades`.* 
-                FROM 
-                    `fotografias` 
-                INNER JOIN 
-                    `propiedades` ON `propiedades`.`idpropiedad` = `fotografias`.`idpropiedad` 
-                INNER JOIN 
-                    `tipo_propiedad` ON `propiedades`.`tipo_propiedad` = `tipo_propiedad`.`idtipo_propiedad` 
-                INNER JOIN 
-                    `usuarios` ON `propiedades`.`id_usuario` = `usuarios`.`id_usuario` 
-                INNER JOIN 
-                    `sector` ON `propiedades`.`idsector` = `sector`.`idsector` 
-                WHERE 
-                    `fotografias`.`principal` = 1";
-            $result = mysqli_query(conectar(), $sql_propiedades);
-
-            while($datos=mysqli_fetch_array($result)){
-                $precio_CLP = $datos['Precio'];
-                $factor = 37527;
-
-                $calculo = $precio_CLP / $factor;
-                $precio_UTF = sprintf("%.2f", $calculo);
-
-                ?>
-                <div class="gallery-item">
-                    <div class="container m-4">
-                        <div class="card border-0 rounded-0 shadow" style="width: 18rem;">
-                            <img src="img/fotosProp/<?php echo $datos['Foto'];?>" width="auto">
-                            <div class="card-body mt-3 mb-3">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h4 class="card-title"><?php echo $datos['nombre'];?></h4>
-                                        <p class="card-text">
-                                            <i class="bi bi-star-fill text-warning">Tipo de vivienda: <?php echo $datos['tipo'];?></i><br>
-                                            <i class="bi bi-star-fill text-warning">Sector: <?php echo $datos['sector'];?></i><br>
-                                            <i class="bi bi-star-fill text-warning">Dirección:<br><?php echo $datos['Direccion'];?></i>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row align-items-center text-center g-0">
-                                <div class="col-12">
-                                    <h5>$<?php echo $precio_CLP?> CLP</h5>
-                                </div>
-                            </div>
-                            <div class="row align-items-center text-center g-0">
-                                <div class="col-12">
-                                    
-                                    <h5>$<?php echo $precio_UTF?> UF</h5>
-                                </div>
-                            </div>
-                            <div class="row align-items-center text-center g-0">
-                                <div class="col-12">
-                                    <a href="details_Prop.php?id=<?php echo $datos['idpropiedad'];?>" class="btn btn-dark w-100 p-3 rounded-0 text-warning">MÁS</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php
-            }
-            ?>
+        <br>
+        <br>
+        
+        <div class="gallery" id="gallery">
+            <div id="loader" class="loader"></div>
         </div>
         <br><br>
            
@@ -209,8 +196,3 @@ if(isset($_SESSION['usu']))
     </footer>
 </body>
 </html>
-<?php
-}else{
-    header("Location:error.html");
-}
-?>

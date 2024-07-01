@@ -30,15 +30,15 @@ $sql_propiedades = "SELECT
     `fotografias`.`principal` = 1
     AND `propiedades`.`Precio` BETWEEN $precioMin AND $precioMax";
 
-// if ($region) {
-//     $sql_propiedades .= " AND `propiedades`.`idregion` = '$region'";
-// }
-// if ($provincia) {
-//     $sql_propiedades .= " AND `propiedades`.`idprovincia` = '$provincia'";
-// }
-// if ($comuna) {
-//     $sql_propiedades .= " AND `propiedades`.`idcomuna` = '$comuna'";
-// }
+if ($region) {
+    $sql_propiedades .= " AND `propiedades`.`idregion` = '$region'";
+}
+if ($provincia) {
+    $sql_propiedades .= " AND `propiedades`.`idprovincias` = '$provincia'";
+}
+if ($comuna) {
+    $sql_propiedades .= " AND `propiedades`.`idcomunas` = '$comuna'";
+}
 if ($sector) {
     $sql_propiedades .= " AND `propiedades`.`idsector` = '$sector'";
 }

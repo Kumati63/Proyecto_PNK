@@ -1,3 +1,4 @@
+
 <?php
 
 include("setup.php");
@@ -57,7 +58,7 @@ function Enviar(){
     
     // Tu consulta de inserción
     $sql_enviar_propiedad = "INSERT INTO `propiedades` (`nombre`, `Descripcion`, `Direccion`, `Precio`, `cant_banos`, `cant_dorm`, `areaTotal_terreno`, `areaConstruida`, `fechaPublicacion`, `estado`, `idsector`, `id_usuario`, `tipo_propiedad`) 
-    VALUES ('".$_POST['Nombre']."','".$_POST['Descripcion']."','".$_POST['Direccion']."','".$_POST['Precio']."', '".$_POST['Banos']."', '".$_POST['Dormitorios']."','".$_POST['areaTotal']."','".$_POST['areaconstruida']."', CURDATE(), 1, '".$_POST['sectores']."', '".$_POST['idUsuario']."', '".$_POST['tipo_prop']."');";
+    VALUES ('".$_POST['Nombre']."','".$_POST['Descripcion']."','".$_POST['Direccion']."','".$_POST['Precio']."', '".$_POST['Banos']."', '".$_POST['Dormitorios']."','".$_POST['areaTotal']."','".$_POST['areaconstruida']."', CURDATE(), 1, '".$_POST['Sector']."', '".$_POST['idUsuario']."', '".$_POST['tipo_prop']."');";
 
     // Ejecutar la consulta
     $conn = conectar();
@@ -123,7 +124,6 @@ function Enviar(){
 
     // Cerrar la conexión
     $conn->close();
-
     header("Location:../Propiedades.php");
     exit;
 }
@@ -148,7 +148,6 @@ function Modificar(){
     
     
     echo $sql_modificar."<br><br><br>";
-    die;
     mysqli_query(conectar(),$sql_modificar);
     
     header("Location:../menu_adm.php");
