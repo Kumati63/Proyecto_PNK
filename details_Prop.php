@@ -170,7 +170,7 @@ $principal = reset($principal);
                         });
                     }
                 </script>
-                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK2Jxpdg2g5LYlGf-eh-0rUgqXYG9yPAI&callback=initMap" async defer></script>
+                    <script src="API PARA EL MAPAS DE GOOGLE" async defer></script>
                 </div>
                 <div class="col-md-6">
                     <div class="images p-3">
